@@ -173,7 +173,7 @@ def evaluate(opt):
         opt.disable_median_scaling = True
         opt.pred_depth_scale_factor = STEREO_SCALE_FACTOR
     else:
-        print("   Mono evaluation - using median scaling")
+        print("   Mono evaluation - using single median scaling")
 
     errors = []
     ratios = []
@@ -206,7 +206,7 @@ def evaluate(opt):
         if not opt.disable_median_scaling:
             ratio = np.median(gt_depth) / np.median(pred_depth)
             ratios.append(ratio)
-            pred_depth *= ratio
+            pred_depth *= 34.169#ratio (single ratio which is the median across all testing images)
 
         pred_depth[pred_depth < MIN_DEPTH] = MIN_DEPTH
         pred_depth[pred_depth > MAX_DEPTH] = MAX_DEPTH

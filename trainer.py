@@ -381,7 +381,7 @@ class Trainer:
                 outputs[("color", frame_id, scale)] = F.grid_sample(
                     inputs[("color", frame_id, source_scale)],
                     outputs[("sample", frame_id, scale)],
-                    padding_mode="border")
+                    padding_mode="zeros") # originally 'border'
 
                 if not self.opt.disable_automasking:
                     outputs[("color_identity", frame_id, scale)] = \
@@ -390,7 +390,8 @@ class Trainer:
     def compute_reprojection_loss(self, pred, target):
         """Computes reprojection loss between a batch of predicted and target images
         """
-        abs_diff = torch.abs(target - pred)
+        valid_mask = (pred > 0).type(torch.FloatTensor).to(self.device)
+        abs_diff = valid_mask * torch.abs(target - pred)
         l1_loss = abs_diff.mean(1, True)
 
         if self.opt.no_ssim:
